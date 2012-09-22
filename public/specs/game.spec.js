@@ -38,10 +38,96 @@ describe('game spec', function () {
 
     });
 
-    describe('when game step is happen', function () {
+    describe('when game step is happen 4x4 grid', function () {
 
         beforeEach(function () {
             Game.init({ height: 4, width: 4});
+        });
+
+        describe('live cell with fewer than two live neighbours', function () {
+
+            beforeEach(function () {
+                Game.putCell(0, 0);
+                Game.nextStep();
+            });
+
+            it ('should cell die', function () {
+                expect(Game.getCell(0, 0).state).toEqual(CellState.Dead);
+            });
+
+        });
+
+        describe('live cell with fewer than two live neighbours', function () {
+
+            beforeEach(function () {
+                Game.putCell(0, 0);
+                Game.putCell(0, 1);
+                Game.nextStep();
+            });
+
+            it ('should cell die', function () {
+                expect(Game.getCell(0, 0).state).toEqual(CellState.Dead);
+            });
+
+        });
+
+        describe('live cell with two or three live neighbours lives on to the next generation', function () {
+
+            beforeEach(function () {
+                Game.putCell(0, 0);
+                Game.putCell(0, 1);
+                Game.putCell(1, 0);
+                Game.nextStep();
+            });
+
+            it ('should cell live', function () {
+                expect(Game.getCell(0, 0).state).toEqual(CellState.Live);
+            });
+
+            it ('rest cells should be dead', function () {
+                expect(Game.getCell(0, 1).state).toEqual(CellState.Dead);
+                expect(Game.getCell(1, 0).state).toEqual(CellState.Dead);
+            });
+
+        });
+
+        describe('live cell with more than three live neighbours dies, as if by overcrowding', function () {
+
+            beforeEach(function () {
+                Game.putCell(0, 0);
+                Game.putCell(0, 1);
+                Game.putCell(1, 0);
+                Game.putCell(1, 1);
+                Game.nextStep();
+            });
+
+            it ('should die', function () {
+                expect(Game.getCell(0, 0).state).toEqual(CellState.Dead);
+            });
+        });
+
+        describe('dead cell with exactly three live neighbours becomes a live cell, as if by reproduction', function () {
+
+            beforeEach(function () {
+                Game.putCell(0, 0, CellState.Dead);
+                Game.putCell(0, 1);
+                Game.putCell(1, 0);
+                Game.putCell(1, 1);
+                Game.nextStep();
+            });
+
+            it ('should live', function () {
+                expect(Game.getCell(0, 0).state).toEqual(CellState.Live);
+            });
+
+        });
+
+    });
+
+    describe('when game step is happen 2x2 grid', function () {
+
+        beforeEach(function () {
+            Game.init({ height: 2, width: 2});
         });
 
         describe('live cell with fewer than two live neighbours', function () {
