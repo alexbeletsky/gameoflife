@@ -117,6 +117,116 @@ describe('grid spec', function () {
             });
         });
 
+        describe('simple 4x4 grid with two live cell', function () {
+            
+            beforeEach(function () {
+                var options = {
+                    height: 4,
+                    width: 4
+                };
+
+                grid = new Grid(options);
+                grid.cells[0].setState(CellState.Live);
+                grid.cells[1].setState(CellState.Live);
+                grid.tick();
+            });
+
+            it ('should cell dead after tick', function () {
+                expect(grid.cells[0].state).toEqual(CellState.Dead);
+                expect(grid.cells[1].state).toEqual(CellState.Dead);
+            });
+
+            it ('should no new live cells born', function () {
+                var born = _.any(grid.cells, function (cell) { return cell.state === CellState.Live; });
+                expect(born).toBe(false);
+            });
+        });
+
+        describe('simple 4x4 grid with three live cells', function () {
+            
+            beforeEach(function () {
+                var options = {
+                    height: 4,
+                    width: 4
+                };
+
+                grid = new Grid(options);
+                grid.cells[0].setState(CellState.Live);
+                grid.cells[1].setState(CellState.Live);
+                grid.cells[4].setState(CellState.Live);
+                grid.tick();
+            });
+
+            it ('should cell live after tick', function () {
+                expect(grid.cells[0].state).toEqual(CellState.Live);
+                expect(grid.cells[1].state).toEqual(CellState.Live);
+                expect(grid.cells[4].state).toEqual(CellState.Live);
+            });
+
+            it ('new cell should born', function () {
+                expect(grid.cells[5].state).toEqual(CellState.Live);
+            });
+        });
+
+        describe('simple 4x4 grid with block pattern', function () {
+
+            beforeEach(function () {
+                var options = {
+                    height: 4,
+                    width: 4
+                };
+
+                grid = new Grid(options);
+                grid.cells[5].setState(CellState.Live);
+                grid.cells[6].setState(CellState.Live);
+                grid.cells[9].setState(CellState.Live);
+                grid.cells[10].setState(CellState.Live);
+                grid.tick();
+            });
+
+            it ('should live cells remain to live', function () {
+                expect(grid.cells[5].state).toEqual(CellState.Live);
+                expect(grid.cells[6].state).toEqual(CellState.Live);
+                expect(grid.cells[9].state).toEqual(CellState.Live);
+                expect(grid.cells[10].state).toEqual(CellState.Live);
+            });
+
+            it ('should only 4 live cell exist', function () {
+                var live = _.filter(grid.cells, function (cell) { return cell.state === CellState.Live; });
+                expect(live.length).toEqual(4);
+            });
+
+        });
+
+        describe('simple 4x4 grid with blinker pattern', function () {
+
+            beforeEach(function () {
+                var options = {
+                    height: 4,
+                    width: 4
+                };
+
+                grid = new Grid(options);
+                grid.cells[5].setState(CellState.Live);
+                grid.cells[6].setState(CellState.Live);
+                grid.cells[7].setState(CellState.Live);
+                grid.tick();
+            });
+
+            it ('should change position', function () {
+                expect(grid.cells[2].state).toEqual(CellState.Live);
+                expect(grid.cells[6].state).toEqual(CellState.Live);
+                expect(grid.cells[10].state).toEqual(CellState.Live);
+            });
+
+            it ('should only 3 live cell exist', function () {
+                var live = _.filter(grid.cells, function (cell) { return cell.state === CellState.Live; });
+                expect(live.length).toEqual(3);
+            });
+
+        });
+
+        
     });
 
 });

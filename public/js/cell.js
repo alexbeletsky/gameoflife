@@ -9,5 +9,13 @@ var Cell = function (options) {
 _.extend(Cell.prototype, {
     setState: function(state) {
         this.state = state;
+    },
+
+    setNextState: function (nextState) {
+        this.nextState = nextState;
+    },
+
+    switchState: function () {
+        this.state = this.nextState;
     }
 });

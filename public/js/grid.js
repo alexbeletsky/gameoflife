@@ -7,6 +7,8 @@ var Grid = function (options) {
 
 _.extend(Grid.prototype, {
     initialize: function (options) {
+        _.bindAll(this);
+
         this.height = options.height;
         this.width = options.width;
 
@@ -19,20 +21,32 @@ _.extend(Grid.prototype, {
     },
 
     tick: function () {
-        _.each(this.cells, function (cell) {
-            var neighbours = _.filter(this.cells, neighbourOf(cell));
-            var nextState = CellState.nextState(cell.state, neighbours.length);
+        _.each(this.cells, this._setNextState);
+        _.each(this.cells, this._switchToNextState);
+    },
 
-            cell.setState(nextState);
+    _setNextState: function (cell) {
+        var neighbours = _.filter(this.cells, neighbourOf(cell));
+        var nextState = CellState.nextState(cell.state, neighbours.length);
 
-            function neighbourOf (currentCell) {
-                return function (otherCell) {
-                    var xDistance = Math.abs(currentCell.position.x - otherCell.position.x);
-                    var yDistance = Math.abs(currentCell.position.y - otherCell.position.y);
+        cell.setNextState(nextState);
 
-                    return xDistance !== 0 && yDistance !== 0 ||;
-                };
-            }
-        }, this);
+        function neighbourOf (currentCell) {
+            return function (otherCell) {
+                return otherCell.state === CellState.Live && closeTo(otherCell, currentCell);
+
+                function closeTo (otherCell, currentCell) {
+                    var xDifference = Math.abs(currentCell.position.x - otherCell.position.x);
+                    var yDifference = Math.abs(currentCell.position.y - otherCell.position.y);
+
+                    return (xDifference !== 0 || yDifference !== 0) && (xDifference <= 1 && yDifference <= 1);
+                }
+            };
+        }
+    },
+
+    _switchToNextState: function(cell) {
+        cell.switchState();
     }
+
 });
