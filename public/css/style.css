@@ -1,8 +1,33 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 22px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+.app {
+    width: 600px;
+    margin: 0 auto;
+}
+
+.info {
+    text-align: center;
+    margin: 10px 0 10px 0;
+}
+
+.info a {
+    margin-right: 20px;
+}
+
+.cell {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    border: 1px solid #eee;
+}
+
+.live {
+    background-color: #00B7FF;
 }

@@ -3,12 +3,14 @@ var Cell = function (options) {
     options = _.extend(defaults, options);
 
     this.state = options.state;
+    this.grid = options.grid;
     this.position = { x: options.x, y: options.y };
 };
 
 _.extend(Cell.prototype, {
     setState: function(state) {
         this.state = state;
+        this.grid.onCellStateChanged(this);
     },
 
     setNextState: function (nextState) {
@@ -16,6 +18,6 @@ _.extend(Cell.prototype, {
     },
 
     switchState: function () {
-        this.state = this.nextState;
+        this.setState(this.nextState);
     }
 });

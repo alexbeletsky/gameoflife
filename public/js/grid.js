@@ -11,11 +11,12 @@ _.extend(Grid.prototype, {
 
         this.height = options.height;
         this.width = options.width;
+        this.handlers = {};
 
         this.cells = [];
         _.each(_.range(this.height), function(y) {
             _.each(_.range(this.width), function (x) {
-                this.cells.push(new Cell({ x: x, y: y}));
+                this.cells.push(new Cell({ grid: this, x: x, y: y}));
             }, this);
         }, this);
     },
@@ -47,6 +48,15 @@ _.extend(Grid.prototype, {
 
     _switchToNextState: function(cell) {
         cell.switchState();
+    },
+
+    on: function(e, handler) {
+        this.handlers[e] = handler;
+    },
+
+    onCellStateChanged: function (cell) {
+        var index = this.cells.indexOf(cell);
+        this.handlers['cellStateChanged'] && this.handlers['cellStateChanged'].call(this, cell, index);
     }
 
 });

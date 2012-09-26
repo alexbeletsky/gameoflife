@@ -1,10 +1,103 @@
 <!DOCTYPE>
 <html>
 <head>
-  <title>Game of Life</title>
+    <title>Game of Life</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="viewport" content="width=device-width">
+    <link href="css/style.css" rel="stylesheet">
+    
+    <script type="text/javascript" src="js/libs/underscore.min.js" ></script>
+    <script type="text/javascript" src="js/libs/jquery-1.7.2.min.js" ></script>
+
+    <script type="text/javascript" src="js/cellstate.js" ></script>
+    <script type="text/javascript" src="js/cell.js" ></script>
+    <script type="text/javascript" src="js/grid.js" ></script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            var GRID_SIZE = 32;
+
+            var timerId = -1;
+            var grid = new Grid({ height: GRID_SIZE, width: GRID_SIZE });
+
+            var gridTemplate = (function () {
+                var grid = '';
+                _.each(_.range(GRID_SIZE), function (i) {
+                    grid += '<div class="row">';
+                    _.each(_.range(GRID_SIZE), function (j) {
+                        var index = i * GRID_SIZE + j;
+                        grid += '<div class="cell" data-index="' + index + '"></div>';
+                    });
+                    grid += '</div>';
+                });
+
+                return grid;
+            })();
+
+            $('.grid').html(gridTemplate);
+
+            $('.cell').on('click', function () {
+                var index = +($(this).data('index'));
+                var cell = grid.cells[index];
+
+                var toggleState = cell.state === CellState.Live ? CellState.Dead : CellState.Live;
+                cell.setState(toggleState);
+            });
+
+            grid.on('cellStateChanged', function (cell, index) {
+                if (cell.state === CellState.Live) {
+                    $('div.cell[data-index="' + index + '"]').addClass('live');
+                } else {
+                    $('div.cell[data-index="' + index + '"]').removeClass('live');
+                }
+            });
+
+            $('.start').on('click', function(e) {
+                e.preventDefault();
+                if (timerId < 0) {
+                    start();
+                }
+            });
+
+            $('.stop').on('click', function (e) {
+                e.preventDefault();
+                stop();
+            })
+
+            function start () {
+                timerId = setInterval(function () {
+                    grid.tick();
+
+                    var anyLiveCells = _.any(grid.cells, function (cell) {
+                        return cell.state === CellState.Live;
+                    });
+
+                    if (!anyLiveCells) {
+                        stop();
+                    }
+                }, 300);
+            }
+
+            function stop () {
+                clearInterval(timerId);
+                timerId = -1;
+            }
+        });
+    </script>
+
 </head>
 
 <body>
-  <h1>Game of Life</h1>
+    <div class="app">
+        <div class="info">
+            <a href="#" class="start">Start</a>
+            <a href="#" class="stop">Stop</a>
+        </div>
+        <div class="grid"></div>
+    </div>
 </body>
 </html>
